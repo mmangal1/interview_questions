@@ -51,4 +51,4 @@ public class stringFormater {
 		System.out.println(result);
 		
 	}
-}
+
