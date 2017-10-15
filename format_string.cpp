@@ -20,17 +20,14 @@ bool is_valid_string(std::string s){
 
 	while(*cstr){
 		if((*cstr) == '{' || (*cstr) == '(' || (*cstr) == '[' ){
-	//		std::cout << "Pushing " << *cstr << std::endl;
 			opening_chars_stack.push(*cstr);
 			cstr++;
 		}else{
 			if( (!opening_chars_stack.empty()) && (opening_chars_stack.top() == corresponding_chars_map[*cstr])){
-	//			std::cout << "Popping " << opening_chars_stack.top()  << " for " << *cstr << std::endl;
 				opening_chars_stack.pop();
 				cstr++;
 			}
 			else{
-	//			std::cout << "Stack empty" << std::endl;
 				return 0;
 			}		
 		}
@@ -44,9 +41,64 @@ bool is_valid_string(std::string s){
 	return 1;
 }
 
+void fix_invalid_string(std::string s){
+	//implement fix right as we go along
+	std::cout << s << std::endl;
+	std::string valid_string = "";
+
+	std::stack<int> opening_chars_stack;
+	std::map<char, char> corresponding_chars_map;
+
+	corresponding_chars_map['}'] = '{';
+	corresponding_chars_map[')'] = '(';
+	corresponding_chars_map[']'] = '[';
+
+	int index = 0;
+	int len = s.length();
+	std::cout << "len = " << len << std::endl;
+	while(index < len){
+		if(s[index] >= '0' && s[index] <= '9'){
+			valid_string += s[index];
+		}
+		else if(s[index] == '{' || s[index] == '(' || s[index] == '[' ){
+			valid_string += s[index];
+			opening_chars_stack.push(s[index]);
+
+		}else{
+			if( !opening_chars_stack.empty() && (opening_chars_stack.top() == corresponding_chars_map[s[index]])){
+				valid_string += s[index];
+				opening_chars_stack.pop();
+			}
+			else{
+				valid_string += corresponding_chars_map[s[index]];
+			//	opening_chars_stack.push(corresponding_chars_map[s[index]]);
+				valid_string += s[index];
+			}
+		}
+		index++;
+	}
+
+	while(!opening_chars_stack.empty()){
+		char open_char = opening_chars_stack.top();
+		opening_chars_stack.pop();
+		if(open_char == '{'){
+			valid_string += '}';
+		}
+		else if(open_char == '['){
+			valid_string += ']';
+		}
+		if(open_char == '('){
+			valid_string += ')';
+		}
+	}
+	
+	std::cout << valid_string << std::endl << std::endl;
+	
+}
+
 int main(){
 
-	
+/*	
 	std::string s1 = "{[123]}";
 	std::cout << s1 << " expected answer: 1,  is_valid() answer: " << is_valid_string(s1) << std::endl;
 
@@ -77,6 +129,22 @@ int main(){
 	//dont close first brace
 	s1 = "{123(12)";
 	std::cout << s1 << " expected answer: 0,  is_valid() answer: " << is_valid_string(s1) << std::endl;
+*/
+
+	std::string s1 = "{123]";
+	fix_invalid_string(s1);
+	s1 = "{123)";
+	fix_invalid_string(s1);
+	s1 = "{123}]1[";
+	fix_invalid_string(s1);
+	s1 = "{123(4})";
+	fix_invalid_string(s1);
+	s1 = "}123(4})";
+	fix_invalid_string(s1);
+	s1 = "({)";
+	fix_invalid_string(s1);
+	s1 = "(12)";
+	fix_invalid_string(s1);
 
 	return 0;
 }
