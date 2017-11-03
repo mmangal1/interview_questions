@@ -55,7 +55,8 @@ void fix_invalid_string(std::string s){
 
 	int index = 0;
 	int len = s.length();
-	std::cout << "len = " << len << std::endl;
+//	std::cout << "len = " << len << std::endl;
+
 	while(index < len){
 		if(s[index] >= '0' && s[index] <= '9'){
 			valid_string += s[index];
@@ -70,9 +71,10 @@ void fix_invalid_string(std::string s){
 				opening_chars_stack.pop();
 			}
 			else{
+			//	valid_string += corresponding_chars_map[s[index]];
+				opening_chars_stack.push(corresponding_chars_map[s[index]]);
 				valid_string += corresponding_chars_map[s[index]];
-			//	opening_chars_stack.push(corresponding_chars_map[s[index]]);
-				valid_string += s[index];
+			//	valid_string += s[index];
 			}
 		}
 		index++;
@@ -91,9 +93,31 @@ void fix_invalid_string(std::string s){
 			valid_string += ')';
 		}
 	}
-	
-	std::cout << valid_string << std::endl << std::endl;
-	
+
+	/* remove empty braces */
+	len = valid_string.length();
+	int pass = 0;
+	while(pass < valid_string.length()){
+		index = 0;
+		bool flag = false;
+		while(index < valid_string.length()){
+			if(valid_string[index] == corresponding_chars_map[valid_string[index+1]]){
+				flag = true;
+				valid_string.erase(index, 2);
+			}
+			index++;
+		}
+		//No changes were made, so break out
+		if(!flag == true){
+			break;
+		}
+	}
+
+	if(valid_string.length() == 0){
+		std::cout << "Cannot format this string" << std::endl << std::endl;
+	}else{	
+		std::cout << valid_string << std::endl << std::endl;
+	}
 }
 
 int main(){
@@ -133,7 +157,7 @@ int main(){
 
 	std::string s1 = "{123]";
 	fix_invalid_string(s1);
-	s1 = "{123)";
+	s1 = "}123)";
 	fix_invalid_string(s1);
 	s1 = "{123}]1[";
 	fix_invalid_string(s1);
@@ -149,3 +173,6 @@ int main(){
 	return 0;
 }
 
+/*
+	Shall I go over the string again and remove the empty braces? to make a valid string
+*/
